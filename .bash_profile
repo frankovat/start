@@ -1,4 +1,3 @@
-```
 echo ----Running .bash_profile
 
 conda -V
@@ -26,5 +25,3 @@ echo ----Completed running .bash_profile
 if [ -f ~/.bashrc ]; then
    source ~/.bashrc
 fi
-
-```
