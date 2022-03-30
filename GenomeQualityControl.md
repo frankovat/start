@@ -4,7 +4,7 @@ After we finish the assembly, we have to asses the quality of the assembly. For 
 You can use the already preinstalled python environment in Metacentrum (https://wiki.metacentrum.cz/wiki/BUSCO). It is the easiest way to asses the quality of the genome assembly: BUSCO is fast and reliable.
 To understand what BUSCO is telling us:
 
-![This is an image](https://training.galaxyproject.org/archive/2019-12-01/topics/genome-annotation/images/busco_genome_summary.png)
+![This is an image](https://training.galaxyproject.org/archive/2019-12-01/topics/genome-annotation/images/busco_genome_summary.png) /n
 So you want to have Complete and Single Copy BUSCOs as close to the Complete BUSCOs, and very little of duplicated BUSCOs, fragmented and missing BUSCOs. The closer you get to the Complete BUSCOs the better the assembly is. 
 
 ```
