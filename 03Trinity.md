@@ -11,7 +11,8 @@ However, I will be sharing with you a script from Priceton, which is easy to adj
 #SBATCH --time=6-23:00 --qos=1wk
 #SBATCH --mem=150000
 
-Trinity --seqType fq --left RNA+string.fastq.gz --right RNA-string.fastq.gz --max_memory 100G --CPU 10 --trimmomatic --normalize_reads --jaccard_clip --output outputDir
+Trinity --seqType fq --left RNA+string.fastq.gz --right RNA-string.fastq.gz --max_memory 100G --CPU 10 --trimmomatic\
+--normalize_reads --jaccard_clip --output outputDir
 ```
 |Command | Explanation|
 |---|---|
