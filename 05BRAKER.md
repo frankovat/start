@@ -37,7 +37,7 @@ Afterwards, we finally implement the [braker.pl](https://github.com/Gaius-August
 |--species|here you assign the name of the species, so Ccyp for C. cypriaca and so on|
 |--gff3|we want an output in [gff3](https://learn.gencore.bio.nyu.edu/ngs-file-formats/gff3-format/) format|
 |--cores|again, you assign the same number of CPUs used in PBS|
-|AUGUSTUS_CONFIG_PATH|you should be familiar with this from BUSCO|
+|--AUGUSTUS_CONFIG_PATH|you should be familiar with this from BUSCO|
 |--GENEMARK_PATH|path to gmes_petap.pl script, I forgot what this one is about and can´t find it online, just many errors with this perl script, so hopefully you will not have that many problems with it|
 |--softmasking|we softmasked our genome before, so we are letting braker know that|
 |--overwrite|overwrites existing files so we do not take much space|
