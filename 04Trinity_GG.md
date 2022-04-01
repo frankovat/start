@@ -23,14 +23,6 @@ Trinity --genome_guided_bam /path/to/output/dir/name_sorted.bam --max_memory 100
 
 cp /trinity_GG/name/name_trinity_GG_jaccard/Trinity-GG.fasta $HOMEDIR/trinity_GG/name/name_Trinity-GG.fasta
 cp /trinity_GG/LLEU/LLEU_sorted.bam $HOMEDIR/trinity_GG/name/name_sorted.bam
-
-hisat2 --max-intronlen 100000 -p 10 -x /theDirectory/you/copied/from/hisat2-build/subdir
-_build --phred33 -1 /Genomics/kocherlab/berubin/data/rnaseq/all_demult_rnaseq/S81A_R1.fastq.gz -2 /Genomics/kocherlab/berubin/data/rnaseq/all_demult_rnaseq/S81A_R2.fastq.gz | samtools view -bS - | samtools sort -o $SCRATCHDIR
-
-/Genomics/kocherlab/berubin/local/src/Trinity/Trinity --genome_guided_bam /scratch/tmp/berubin/transcriptomes/trinity_GG/LLEU/LLEU_sorted_callum.bam --max_memory 100G --CPU 10 --genome_guided_max_intron 100000 --output /scratch/tmp/berubin/transcriptomes/trinity_GG/LLEU/LLEU_trinity_GG_callum
-
-cp /trinity_GG/name/name_trinity_GG_callum/Trinity-GG.fasta $HOMEDIR/trinity_GG/name/name_Trinity-GG_callum.fasta
-cp /trinity_GG/name/name_sorted_callum.bam $HOMEDIR/trinity_GG/name/name_sorted_callum.bam
 ```
 ## Hisat2
 [Here](http://daehwankimlab.github.io/hisat2/manual/) is a manual to hisat2. 
@@ -45,6 +37,8 @@ First, we will run `hisat2-build` command, to create indexes for our genome. Lat
 |-2|path to - string of the RNA data|
 |samtools view and sort| here we make a pipeline with the straight slash ad piping the sorting with samtools - don´t forget the samtools module!|
 
+## Trinity
+Previous file mentiones Trinity
 |Trinity command specification|explanation|
 |---|---|
 |--genome_guided_bam|here we used the output file that is name_sorted.bam|
