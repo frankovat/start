@@ -1,4 +1,4 @@
-#BRAKER
+# BRAKER
 [Braker](https://github.com/Gaius-Augustus/BRAKER#what-is-braker) is a genome annotation pipeline implementing several programs. It combines [GeneMark-ET](https://github.com/gatech-genemark/GeneMark-EP-plus) and [Augustus](https://github.com/Gaius-Augustus/Augustus). BRAKER pipeline implements RNA-seq data to predict gene structure annotation in a novel genome.
 By now, you should be familiar with Augustus, because we use it while running BUSCO.
 GeneMark uses a [Hidden Markov Model](https://www.sciencedirect.com/topics/medicine-and-dentistry/hidden-markov-model), which is quite an interesting thing, so go ahead and read it if you want. Augustus on the other hand uses a [Generalized Hidden Markov Model] (https://pubmed.ncbi.nlm.nih.gov/8877513/). It will help you to understand how the annotations are carried out, if you are interested :)
