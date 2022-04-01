@@ -42,3 +42,5 @@ Afterwards, we finally implement the [braker.pl](https://github.com/Gaius-August
 |--softmasking|we softmasked our genome before, so we are letting braker know that|
 |--overwrite|overwrites existing files so we do not take much space|
 |--AUGUSTUS_ab_initio|it gives us ab initio predictions of genes in the genome|
+
+**DON´T FORGET TO NAME ALL THE FILES PROPERLY SO YOU DON´T GET LOST! IN THIS PHASE, WE ARE GENERATING A HUGE AMOUNT OF FILES AND IT FEELS LIKE A LABYRINTH WHEN YOU HAVE A MESS IN IT!!!**
