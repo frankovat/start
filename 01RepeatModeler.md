@@ -7,32 +7,46 @@ RepeatModeler is quite easy to use. You can find the official documentation belo
 Cluster Database at High Identity with Tolerance
 Produces non-redundant representative sequences as output, reduces overal size of the database without removing any sequence information by only removing redundant or highly similar sequences. It basically cleans the database to make it easier to predict genes.
 
+## DOWNLOAD DROSOPHILA FROM HERE https://www.ncbi.nlm.nih.gov/genome?term=vih&cmd=DetailsSearch (PROTEIN)
 ## Job example:
 ```bash
 #!/bin/bash
-#SBATCH -n 1
-#SBATCH --cpus-per-task=10
-#SBATCH --time=6-23:00 --qos=1wk
-#SBATCH --mem=20000
-#SBATCH --mail-user=frankova@princeton.edu
-#SBATCH --job-name=Cnig_repeats
-#SBATCH --output=/Genomics/grid/users/frankova/RepeatModeler/Cnig/repeats-%j.out
-#SBATCH --error=/Genomics/grid/users/frankova/RepeatModeler/Cnig/repeats-%j.err
+#PBS -l select=1:ncpus=10:mem=200gb:scratch_local=200gb
+#PBS -l walltime=150:00:00
+#PBS -m abe 
 
-module add RepeatModeler
-export PATH=$PATH:/Genomics/grid/users/frankova/software/ncbi-blast-2.5.0+/bin/
+OUTDIR="/storage/plzen1/home/frankovat/RepeatModeler/Ccyp"
 
-BuildDatabase -name Cnig_db -engine ncbi /Genomics/grid/users/frankova/Genome/Cnig.fasta 
+cp -r /storage/plzen1/home/frankovat/Software/cdhit $SCRATCHDIR || exit 1
+cp -r /storage/projects/BlastDB/swissprot.* $SCRATCHDIR || exit 2
+cp -r /storage/projects/BlastDB/nr.* $SCRATCHDIR || exit 3
+cp /storage/plzen1/home/frankovat/Postprocessing/Gapcloser/Ccyp/Ccyp_gapcloser.fasta $SCRATCHDIR || exit 4
+cp /storage/plzen1/home/frankovat/RepeatModeler/GCF_000001215.4_Release_6_plus_ISO1_MT_protein.faa $SCRATCHDIR || exit 5
+cp /storage/plzen1/home/frankovat/RepeatModeler/filter_repeats.py $SCRATCHDIR || exit 6
+cd $SCRATCHDIR || exit 7
 
-RepeatModeler -database Cnig_db -pa 3 -engine ncbi >& Cnig.out
+module load python-2.7.6-gcc
+module load python27-modules-gcc
+module load repeatmodeler-1.0.11
+export PATH=$PATH:/software/blast-2.2.27/bin
 
-/Genomics/grid/users/frankova/software/cdhit/cd-hit-est -i ./RM_*/consensi.fa -o rm_noredun.fa -c 0.8 -M 20000 -n 5 -aS 0.8 -r 1 -T 10
+BuildDatabase -name Ccyp_db -engine ncbi Ccyp_gapcloser.fasta
 
-blastx -query rm_noredun.fa -db /Genomics/grid/users/frankova/Reference-genomes/uniprot/uniprot_sprot_blastdb -outfmt '6 qseqid sseqid pident length evalue bitscore qlen slen' -out rm_noredun_against_uniprot.txt -num_threads 10 
+RepeatModeler -database Ccyp_db -pa 10 -engine ncbi >& Ccyp.out
 
-blastx -query rm_noredun.fa -db /Genomics/grid/users/frankova/Reference-genomes/drosophila/dmel_blastdb -outfmt '6 qseqid sseqid pident length evalue bitscore qlen slen' -out rm_noredun_against_dmel.txt -num_threads 10
+$SCRATCHDIR/cdhit/cd-hit-est -i ./RM_*/consensi.fa -o rm_noredun.fa -c 0.8 -M 20000 -n 5 -aS 0.8 -r 1 -T 10
+cp rm_noredun.fa $OUTDIR || exit 8
+cp rm_noredun_noprot.fa $OUTDIR || exit 9
+makeblastdb -input_type fasta -in GCF_000001215.4_Release_6_plus_ISO1_MT_protein.faa -dbtype prot -title DrosDBprot -out DrosDB_prot.blastdb
+#cp DrosDB_prot.blastdb $OUTDIR || exit 9
 
-python /Genomics/grid/users/frankova/Python/filter_repeats.py rm_noredun.fa rm_noredun_noprot.fa rm_noredun_against_uniprot.txt rm_noredun_against_dmel.txt
+blastx -query rm_noredun.fa -db DrosDB_prot.blastdb -outfmt '6 qseqid sseqid pident length evalue bitscore qlen slen' -out rm_noredun_against_dmel.txt -num_threads 10
+
+blastx -query rm_noredun.fa -db $SCRATCHDIR/swissprot -outfmt '6 qseqid sseqid pident length evalue bitscore qlen slen' -out rm_noredun_against_uniprot.txt -num_threads 10 
+
+python filter_repeats.py rm_noredun.fa rm_noredun_noprot.fa rm_noredun_against_uniprot.txt rm_noredun_against_dmel.txt
+
+cp -r $SCRATCHDIR $OUTDIR || export CLEAN_SCRATCH=false
 ```
 `#!/bin/bash`
 is a mandatory line when using bash. It acts as a language interpreter, it means, that you are telling the system that your code uses the bash shell scripting language. <br/>
@@ -111,6 +125,19 @@ blast_file = open(uniprot_blast, 'rU')
 #create a blank list in which you'll assign values
 sim_seq_list = []
 #for each line in our blast_file
+from Bio import SeqIO
+#nimport sys library
+import sys 
+#Sys.Argv creates a string of arguments used in your script, 0 is the name of the script, 1-n is the arguments
+rm_file = sys.argv[1] 
+outfile = sys.argv[2]
+uniprot_blast = sys.argv[3]
+dmel_blast = sys.argv[4]
+#name of your variable=open(file, "r=open for reading, U=universal newlines, expects all types of line endings)
+blast_file = open(uniprot_blast, 'rU')
+#create a blank list in which you'll assign values
+sim_seq_list = []
+#for each line in our blast_file
 for line in blast_file:
     #variable sequence id = first line [0] that ends with space will be split from the file ()
     seqid = line.split()[0]
@@ -161,10 +188,11 @@ seq_file = SeqIO.parse(rm_file, format = 'fasta')
 outfile = open(outfile, 'w')
 #for each record in sequence file, 
 for rec in seq_file:
-    if rec.id not in sim_seq_list and len(rec.seq.tostring()) >= 80:
-        outfile.write(">%s\n%s\n" % (rec.id, rec.seq.tostring()))
+    if rec.id not in sim_seq_list and len(str(rec.seq)) >= 80:
+        outfile.write(">%s\n%s\n" % (rec.id, str(rec.seq)))
 
 outfile.close()
+
 ```
 ## Documentations
 ### RepeatModeler
