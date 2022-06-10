@@ -12,9 +12,9 @@ But when you have a look at the available modules, hisat2 is there, so it should
 
 module add hisat2-2.0.5 #I added it here to remind you to not forget
 #here create a dirrectory in the scratchdir for the outputs
-hisat2-build /path/to/your/assembled/genome.fasta /here/is/the/output/directory
+hisat2-build /path/to/your/assembled/genome.fasta $SCRATCHDIR/trinity_GG/Acla/Acla_build
 
-cd /here/is/the/output/directory
+cd $SCRATCHDIR/trinity_GG/Acla/Acla_build
 
 hisat2 --max-intronlen 100000 -p 10 -x /theDirectory/you/copied/from/hisat2-build/subdir
 _build --phred33 -1 /path/to/rna+.fastq.gz -2 /path/to/rna-.fastq.gz | samtools view -bS - | samtools sort -o /path/to/output/dir/name_sorted.bam
