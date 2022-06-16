@@ -4,27 +4,34 @@ RepeatMasker is a program used for finding interspersed repeats and low complexi
 ## Job example:
 ```bash
 #!/bin/bash
-#SBATCH -n 1
-#SBATCH --cpus-per-task=10
-#SBATCH --time=23:59:59 --qos=1day
-#SBATCH --mem=20000
-#SBATCH --mail-user=frankova@princeton.edu
-#SBATCH --job-name=Cnig_masking
-#SBATCH --output=/Genomics/grid/users/frankova/RepeatMasker/Cnig/masking-%j.out
-#SBATCH --error=/Genomics/grid/users/frankova/RepeatMasker/Cnig/masking-%j.err
+#PBS -l select=1:ncpus=10:mem=200gb:scratch_local=250gb
+#PBS -l walltime=30:00:00
+#PBS -m abe 
 
-module add RepeatMasker/open-4.0
-export PATH=$PATH:/Genomics/grid/users/frankova/ncbi-blast-2.5.0+/bin/
+OUTDIR="/storage/plzen1/home/frankovat/RepeatMasker/Cchal"
 
-cat /Genomics/grid/users/frankova/RepeatModeler/Cnig/rm_noredun_noprot.fa /Genomics/grid/users/frankova/Reference-genomes/arthropoda_repeatmasker_lib.fa > Cnig_arthropoda_consensi.fa
+cp /storage/plzen1/home/frankovat/RepeatModeler/Chal/job_11536836.meta-pbs.metacentrum.cz/rm_noredun_noprot.fa $SCRATCHDIR || exit 1 
+cd $SCRATCHDIR || exit 2
 
-mkdir Cnig_rm_masked
+#module load python-3.6.2-gcc
+#module load blast+-2.8.0a-src
+module add repeatmasker-4.0.7
+#export PATH=$PATH:/Genomics/grid/users/frankova/ncbi-blast-2.5.0+/bin/
 
-cp /Genomics/grid/users/frankova/Genome/Cnig.fasta Cnig_rm_masked/Cnig.fasta
+cat $SCRATCHDIR/rm_noredun_noprot.fa /storage/plzen1/home/frankovat/GenomesTranscriptomes/Petersen_Insect_Mobilome_Repeat_Libraries/repeat-libraries/artlib.fa.classified > Cchal_arthropoda_consensi.fa
 
-chmod u+w Cnig_rm_masked/Cnig.fasta
+mkdir Cchal_rm_masked
 
-RepeatMasker -e ncbi -pa 10 -lib Cnig_arthropoda_consensi.fa -gff -xsmall -source -dir Cnig_rm_masked Cnig_rm_masked/Cnig.fasta
+cp /storage/plzen1/home/frankovat/Postprocessing/Gapcloser/Cchal/Cchal_gapcloser.fasta $SCRATCHDIR || exit 2
+cp Cchal_gapcloser.fasta $SCRATCHDIR/Cchal_rm_masked || exit 3
+
+sed -i 's/Ceratina_chalybea_NODE/Cech_NODE/' Cchal_rm_masked/Cchal_gapcloser.fasta
+
+chmod u+w $SCRATCHDIR/Cchal_rm_masked/Cchal_gapcloser.fasta
+
+RepeatMasker -e ncbi -pa 10 -lib Cchal_arthropoda_consensi.fa -gff -xsmall -source -dir Cchal_rm_masked Cchal_rm_masked/Cchal_gapcloser.fasta
+
+cp -r $SCRATCHDIR/Cchal_rm_masked $OUTDIR || exit CLEAN_SCRATCH=false
 ```
 
 `#!/bin/bash`
