@@ -7,25 +7,25 @@ However, I will be sharing with you a script from Priceton, which is easy to adj
 ```
 #!/bin/bash
 #PBS -l select=1:ncpus=10:mem=200gb:scratch_local=150gb
-#PBS -l walltime=74:00:00
+#PBS -l walltime=90:00:00
 #PBS -m abe 
 
 trap 'clean_scratch' TERM EXIT
 
-DATADIR="/storage/plzen1/home/sharu/sharu/rna/AclaT"
-OUTDIR="/storage/plzen1/home/sharu/sharu/rna/AclaT/Acla_trinity"
+DATADIR="/storage/plzen1/home/frankovat/GenomesTranscriptomes/Transcriptomes/CchalT"
+OUTDIR="/storage/plzen1/home/frankovat/TRINITY/trinity/Cchal"
 
-cp $DATADIR/AclaT_1.fq.gz $SCRATCHDIR || exit 1
-cp $DATADIR/AclaT_2.fq.gz $SCRATCHDIR || exit 2
+cp $DATADIR/CchalT_1.fq.gz $SCRATCHDIR || exit 1
+cp $DATADIR/CchalT_2.fq.gz $SCRATCHDIR || exit 2
 
 cd $SCRATCHDIR || exit 3
 
+mkdir trinity
+
 module load trinity-2.9.1
 
-Trinity --no_version_check --seqType fq --left /storage/plzen1/home/sharu/sharu/rna/AclaT/AclaT_1.fq.gz --right /storage/plzen1/home/sharu/sharu/rna/AclaT/AclaT_2.fq.gz --max_memory 200G --CPU 10 --trimmomatic --jaccard_clip --output /storage/plzen1/home/sharu/sharu/rna/AclaT/Acla_trinity
-
-export CLEAN_SCRATCH=false
-
+Trinity --no_version_check --seqType fq --left $SCRATCHDIR/CchalT_1.fq.gz --right $SCRATCHDIR/CchalT_2.fq.gz --max_memory 200G --CPU 10 --trimmomatic --jaccard_clip --output $SCRATCHDIR/trinity
+cp -r $SCRATCHDIR/trinity $OUTDIR || export CLEAN_SCRATCH=false
 ```
 |Command | Explanation|
 |---|---|
