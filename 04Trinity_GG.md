@@ -5,24 +5,33 @@ But when you have a look at the available modules, hisat2 is there, so it should
 
 ```
 #!/bin/bash
-#SBATCH -n 1
-#SBATCH --cpus-per-task=10
-#SBATCH --time=6-23:00 --qos=1wk
-#SBATCH --mem=100000
+#PBS -l select=1:ncpus=10:mem=250gb:scratch_local=200gb
+#PBS -l walltime=72:00:00
+#PBS -m abe
 
-module add hisat2-2.0.5 #I added it here to remind you to not forget
-#here create a dirrectory in the scratchdir for the outputs
-hisat2-build /path/to/your/assembled/genome.fasta $SCRATCHDIR/trinity_GG/Acla/Acla_build
+trap 'clean_scratch' TERM EXIT
 
-cd $SCRATCHDIR/trinity_GG/Acla/Acla_build
+OUTDIR="/storage/plzen1/home/frankovat/TRINITY/trinity_GG/"
 
-hisat2 --max-intronlen 100000 -p 10 -x /theDirectory/you/copied/from/hisat2-build/subdir
-_build --phred33 -1 /path/to/rna+.fastq.gz -2 /path/to/rna-.fastq.gz | samtools view -bS - | samtools sort -o /path/to/output/dir/name_sorted.bam
+cp /auto/plzen1/home/frankovat/GenomesTranscriptomes/Transcriptomes/CchalT/CchalT_1.fq.gz $SCRATCHDIR || exit 1
+cp /auto/plzen1/home/frankovat/GenomesTranscriptomes/Transcriptomes/CchalT/CchalT_2.fq.gz $SCRATCHDIR || exit 2
+cp /auto/plzen1/home/frankovat/Postprocessing/Gapcloser/Cchal/Cchal_gapcloser.fasta $SCRATCHDIR || exit 3
 
-Trinity --genome_guided_bam /path/to/output/dir/name_sorted.bam --max_memory 100G --CPU 10 --SS_lib_type RF --genome_guided_max_intron 100000 --output /path/to/output/dir/name_trinity_GG
+cd $SCRATCHDIR
 
-cp /trinity_GG/name/name_trinity_GG_jaccard/Trinity-GG.fasta $HOMEDIR/trinity_GG/name/name_Trinity-GG.fasta
-cp /trinity_GG/LLEU/LLEU_sorted.bam $HOMEDIR/trinity_GG/name/name_sorted.bam
+mkdir -p trinity_GG/Cchal/Cchal_build
+
+module load samtools-1.9
+module load hisat2-2.2.1
+#module load trinity-2.9.1
+
+hisat2-build $SCRATCHDIR/Cchal_gapcloser.fasta $SCRATCHDIR/trinity_GG/Cchal/Cchal_build
+
+hisat2 --max-intronlen 100000 -p 10 -x $SCRATCHDIR/trinity_GG/Cchal/Cchal_build --phred33 -1 CchalT_1.fq.gz -2 CchalT_2.fq.gz | samtools view -bS - | samtools sort -o $SCRATCHDIR/trinity_GG/Cchal/Cchal_sorted.bam
+
+Trinity --no_version_check --genome_guided_bam $SCRATCHDIR/trinity_GG/Acla/Acla_sorted.bam --max_memory 200G --CPU 10 --SS_lib_type RF --genome_guided_max_intron 100000 --output $SCRATCHDIR/trinity_GG/Acla/Acla_trinity_GG
+
+cp -r $SCRATCHDIR $OUTDIR || export CLEAN_SCRATCH=false
 ```
 ## Hisat2
 [Here](http://daehwankimlab.github.io/hisat2/manual/) is a manual to hisat2. 
