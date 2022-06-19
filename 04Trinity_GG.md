@@ -29,7 +29,7 @@ hisat2-build $SCRATCHDIR/Cchal_gapcloser.fasta $SCRATCHDIR/trinity_GG/Cchal/Ccha
 
 hisat2 --max-intronlen 100000 -p 10 -x $SCRATCHDIR/trinity_GG/Cchal/Cchal_build --phred33 -1 CchalT_1.fq.gz -2 CchalT_2.fq.gz | samtools view -bS - | samtools sort -o $SCRATCHDIR/trinity_GG/Cchal/Cchal_sorted.bam
 
-Trinity --no_version_check --genome_guided_bam $SCRATCHDIR/trinity_GG/Acla/Acla_sorted.bam --max_memory 200G --CPU 10 --SS_lib_type RF --genome_guided_max_intron 100000 --output $SCRATCHDIR/trinity_GG/Acla/Acla_trinity_GG
+Trinity --no_version_check --genome_guided_bam $SCRATCHDIR/Cchal_sorted.bam --max_memory 200G --CPU 10 --SS_lib_type RF --genome_guided_max_intron 100000 --output $SCRATCHDIR/trinity_GG/Cchal/Cchal_trinity_GG
 
 cp -r $SCRATCHDIR $OUTDIR || export CLEAN_SCRATCH=false
 ```
