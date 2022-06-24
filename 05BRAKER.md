@@ -5,25 +5,30 @@ GeneMark uses a [Hidden Markov Model](https://www.sciencedirect.com/topics/medic
 
 ```
 #!/bin/bash
-#SBATCH -n 1
-#SBATCH --cpus-per-task=10
-#SBATCH --time=6-23:00 --qos=1wk
-#SBATCH --mem=100000
+#PBS -l select=1:ncpus=10:mem=250gb:scratch_local=200gb
+#PBS -l walltime=20:00:00
+#PBS -m abe
 
-module add BRAKER1
+OUTDIR="/storage/plzen1/home/frankovat/BRAKER/Cchal"
 
-module add exonerate
+test -n "$SCRATCHDIR" || exit 1
+cp /auto/plzen1/home/frankovat/RepeatMasker/Cchal/Cchal_rm_masked/Cchal_gapcloser.fasta.masked $SCRATCHDIR || exit 1
+cp /storage/plzen1/home/frankovat/BRAKER/Cchal/job_11802907.meta-pbs.metacentrum.cz/Cchal/Cchal_sorted.bam $SCRATCHDIR || exit 2
+cd $SCRATCHDIR || exit 3
 
-module add ncbi-blast
+module load braker2-2.1.6
+module load exonerate-2.2.0
 
-hisat2-build /path/to/the/masked/genome.fasta.masked /annotation/from/braker/name/name_build # don´t forget to copy this directory
+export AUGUSTUS_CONFIG_PATH=$SCRATCHDIR/augustus_config
+cp -r /software/augustus/3.4.0/config $AUGUSTUS_CONFIG_PATH || exit 3
+chmod -R u+rwX $AUGUSTUS_CONFIG_PATH
 
-cd $SCRATCHDIR/annotation/from/braker/name
+braker.pl --genome=$SCRATCHDIR/Cchal_gapcloser.fasta.masked --bam=$SCRATCHDIR/Cchal_sorted.bam --species=CchalBraker --gff3 --cores=10 --softmasking --overwrite --AUGUSTUS_ab_initio
 
-hisat2 --max-intronlen 100000 -p 10 -x /annotation/from/braker/name/name_build --phred33 -1 /path/to/transcriptome/+strand -2 /path/to/transcriptome/-strand | samtools view -bS - | samtools sort -o /annotation/from/braker/name/name_sorted.bam
+cp -r $SCRATCHDIR $OUTDIR || exit 4
+clean_scratch
 
-braker.pl --genome=/path/to/the/masked/genome.fasta.masked --bam=/annotation/from/braker/name/name_sorted.bam --species=name --gff3 --cores=10 --AUGUSTUS_CONFIG_PATH=/path/to/augustus/config/ --GENEMARK_PATH=/path/to/gm_et_linux_64/gmes_petap/ --softmasking --overwrite --AUGUSTUS_ab_initio
-
+#a nebo můžete vykopírovat přímo tyto dva soubory
 cp /annotation/braker/name/braker/name_braker/augustus.hints.gff3 $HOMEDIR
 
 cp /annotation/braker/name/braker/name_braker/augustus.ab_initio.gff3 $HOMEDIR
