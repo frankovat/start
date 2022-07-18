@@ -1,8 +1,38 @@
 # BRAKER
 [Braker](https://github.com/Gaius-Augustus/BRAKER#what-is-braker) is a genome annotation pipeline implementing several programs. It combines [GeneMark-ET](https://github.com/gatech-genemark/GeneMark-EP-plus) and [Augustus](https://github.com/Gaius-Augustus/Augustus). BRAKER pipeline implements RNA-seq data to predict gene structure annotation in a novel genome.
 By now, you should be familiar with Augustus, because we use it while running BUSCO.
-GeneMark uses a [Hidden Markov Model](https://www.sciencedirect.com/topics/medicine-and-dentistry/hidden-markov-model), which is quite an interesting thing, so go ahead and read it if you want. Augustus on the other hand uses a [Generalized Hidden Markov Model](https://pubmed.ncbi.nlm.nih.gov/8877513/). It will help you to understand how the annotations are carried out, if you are interested :)
+GeneMark uses a [Hidden Markov Model](https://www.sciencedirect.com/topics/medicine-and-dentistry/hidden-markov-model), which is quite an interesting thing, so go ahead and read it if you want. Augustus on the other hand uses a [Generalized Hidden Markov Model](https://pubmed.ncbi.nlm.nih.gov/8877513/). It will help you to understand how the annotations are carried out, if you are interested
+```
+#!/bin/bash
+#PBS -l select=1:ncpus=10:mem=250gb:scratch_local=200gb
+#PBS -l walltime=03:00:00
+#PBS -m abe
 
+OUTDIR="/storage/plzen1/home/frankovat/BRAKER/Cchal"
+
+cp /auto/plzen1/home/frankovat/BRAKER/Cchal/Cchal_short.fasta.masked $SCRATCHDIR || exit 1
+cp /auto/plzen1/home/frankovat/GenomesTranscriptomes/Transcriptomes/CchalT/CchalT_1.fq.gz $SCRATCHDIR || exit 2
+cp /auto/plzen1/home/frankovat/GenomesTranscriptomes/Transcriptomes/CchalT/CchalT_2.fq.gz $SCRATCHDIR || exit 3
+cd $SCRATCHDIR || exit 4
+
+mkdir Cchal
+mkdir -p Cchal/Cchal_build
+chmod u+w $SCRATCHDIR/Cchal/Cchal_build
+
+#module load braker2-2.1.6
+#module load exonerate-2.2.0
+#module load blast+-2.8.0a-src
+module load hisat2-2.2.1
+module load samtools-1.9
+
+hisat2-build $SCRATCHDIR/Cchal_short.fasta.masked $SCRATCHDIR/Cchal/Cchal_build
+
+cd $SCRATCHDIR/Cchal
+
+hisat2 --max-intronlen 100000 -p 10 -x $SCRATCHDIR/Cchal/Cchal_build --phred33 -1 $SCRATCHDIR/CchalT_1.fq.gz -2 $SCRATCHDIR/CchalT_2.fq.gz | samtools view -bS - | samtools sort -o $SCRATCHDIR/Cchal/Cchal_sorted.bam
+
+cp -r $SCRATCHDIR/Cchal/Cchal_sorted.bam $OUTDIR || export CLEAN_SCRATCH=false
+```
 ```
 #!/bin/bash
 #PBS -l select=1:ncpus=10:mem=250gb:scratch_local=200gb
