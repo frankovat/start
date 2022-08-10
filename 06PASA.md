@@ -78,6 +78,8 @@ species=YourSpecies #the name must be the same as the name of your files
 
 cat  ${species}_denovo.fasta ${species}_gg.fasta > ${species}_transcripts.fasta
 
+software/pasa_2.3.3/pathTOpasaScriptSeqClean/seqclean ${species}_transcripts.fasta
+
 $PASA_HOME/misc_utilities/accession_extractor.pl < $SCRATCHDIR/Cchal_denovo.fasta > tdn.accs
 
 /software/pasa_2.3.3/PASApipeline-v2.3.3/Launch_PASA_pipeline.pl -c alignAssembly.config -C -r -R -g ${species}_gapcloser.fasta.masked -t -u ${species}_transcripts.fasta --ALIGNERS blat,gmap --CPU 16 -I 100000 --TDN tdn.accs --TRANSDECODER
