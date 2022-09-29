@@ -1,5 +1,5 @@
 ## 01Maker_reformatgff
-´´´
+```
 #!/bin/bash
 #PBS -l select=1:ncpus=8:ompthreads=8:mem=300gb:scratch_local=150gb
 #PBS -l walltime=5:00:00
@@ -10,10 +10,10 @@ cp /auto/plzen1/home/frankovat/PASA/job_12326530.meta-pbs.metacentrum.cz/job_122
 module add python-3.6.2-gcc
 
 python /auto/plzen1/home/frankovat/Maker/reformat_gff.py /auto/plzen1/home/frankovat/PASA/job_12326530.meta-pbs.metacentrum.cz/job_12299021.meta-pbs.metacentrum.cz/Cchal.sqlite.pasa_assemblies.gff3 /auto/plzen1/home/frankovat/Maker/Cchal.sqlite.pasa_assemblies_form.gff3 Cchal #transforming previous gff file into new one
-´´´
+```
 
 ## 02Maker_ifloop
-'''
+```
 #!/bin/bash
 #PBS -l select=1:ncpus=14:mem=300gb:scratch_local=150gb
 #PBS -l walltime=70:00:00
@@ -47,10 +47,10 @@ gff3_merge -d $SCRATCHDIR/Cchal.maker.output/Cchal_master_datastore_index.log -o
 gff3_merge -d $SCRATCHDIR/Cchal.maker.output/Cchal_master_datastore_index.log -o Cchal_genes.gff3 -g
 
 cp -r $SCRATCHDIR /storage/plzen1/home/frankovat/Maker || export CLEAN_SCRATCH=false
-'''
+```
 
 ## 03Maker_busco1
-'''
+```
 #!/bin/bash
 #PBS -l select=1:ncpus=14:mem=300gb:scratch_local=250gb
 #PBS -l walltime=15:00:00
@@ -69,10 +69,10 @@ cd round_1_output_brakerpred
 run_BUSCO.py -i $SCRATCHDIR/round_1_output_brakerpred/Cchal.all.maker.proteins.fasta -o busco_prots -l $SCRATCHDIR/hymenoptera_odb9 -m proteins -c 14 -sp Cchal_braker
 
 cp -r $SCRATCHDIR /storage/plzen1/home/frankovat/Maker/ || export CLEAN_SCRATCH=false
-'''
+```
 
 ## 04Maker_interproscan
-'''
+```
 #!/bin/bash
 #PBS -l select=1:ncpus=9:mem=300gb:scratch_local=250gb
 #PBS -l walltime=15:00:00
@@ -90,10 +90,10 @@ interproscan.sh -T $SCRATCHDIR -i Cchal.all.maker.non_overlapping_ab_initio.prot
 grep "IPR" Cchal.all.maker.non_overlapping_ab_initio.proteins.fasta.iprscan.tsv | awk '{print $1}' | sort | uniq > ipr_hits.txt
 
 cp -r $SCRATCHDIR /storage/plzen1/home/frankovat/Maker || export CLEAN_SCRATCH=false
-'''
+```
 
 ## 05Maker_gff3-select
-'''
+```
 #!/bin/bash
 #PBS -l select=1:ncpus=9:mem=300gb:scratch_local=250gb
 #PBS -l walltime=15:00:00
@@ -118,10 +118,10 @@ mpirun maker -fix_nucleotides -base Cchal_ipradd -TMP "/tmp/05Maker" maker_opts_
 rm -r /tmp/05Maker
 
 cp -r $SCRATCHDIR /storage/plzen1/home/frankovat/Maker || export CLEAN_SCRATCH=false
-'''
+```
 
 ## 06Maker_gff3merge2
-'''
+```
 #!/bin/bash
 #PBS -l select=1:ncpus=9:mem=300gb:scratch_local=250gb
 #PBS -l walltime=15:00:00
@@ -163,13 +163,13 @@ gff3_merge -d $SCRATCHDIR/Cchal_ipradd.maker.output/Cchal_ipradd_master_datastor
 maker_map_ids --prefix cchal_ --justify 5 cchal_genes.gff3 > Cchal_genes.ids
 
 cp -r $SCRATCHDIR/round_2_output_ipradd /auto/plzen1/home/frankovat/Maker/02Output || CLEAN_SCRATCH=false
-'''
+```
 
 
 # CTL files
 
 ### maker_opts
-'''
+```
 #-----Genome (these are always required)
 genome=/auto/plzen1/home/frankovat/RepeatMasker/Cchal/Cchal_rm_masked/Cchal_gapcloser.fasta.masked #genome sequence (fasta file or fasta embeded in GFF3 file)
 organism_type=eukaryotic #eukaryotic or prokaryotic. Default is eukaryotic
@@ -246,10 +246,10 @@ tries=2 #number of times to try a contig if there is a failure for some reason
 clean_try=0 #remove all data from previous run before retrying, 1 = yes, 0 = no
 clean_up=0 #removes theVoid directory with individual analysis files, 1 = yes, 0 = no
 TMP= #specify a directory other than the system default temporary directory for temporary files
-'''
+```
 
 ### maker_exe.ctl
-'''
+```
 #-----Location of Executables Used by MAKER/EVALUATOR
 makeblastdb=/software/blastPlus-2.2.29/bin/makeblastdb #location of NCBI+ makeblastdb executable
 blastn=/software/blastPlus-2.2.29/bin/blastn #location of NCBI+ blastn executable
@@ -276,10 +276,10 @@ fgenesh= #location of fgenesh executable
 
 #-----Other Algorithms
 probuild= #location of probuild executable (required for genemark)
-'''
+```
 
 ### maker_bopts.ctl
-'''
+```
 #-----BLAST and Exonerate Statistics Thresholds
 blast_type=ncbi+ #set to 'ncbi+', 'ncbi' or 'wublast'
 #use_rapsearch=0 #use rapsearch instead of blastx, 1 = yes, 0 = no
@@ -308,10 +308,10 @@ bit_rm_blastx=30 #Blastx bit cutoff for transposable element masking
 
 ep_score_limit=20 #Exonerate protein percent of maximal score threshold
 en_score_limit=20 #Exonerate nucleotide percent of maximal score threshold
-'''
+```
 
 ### maker_evm.ctl
-'''
+```
 #-----Transcript weights
 evmtrans=10 #default weight for source unspecified est/alt_est alignments
 evmtrans:blastn=0 #weight for blastn sourced alignments
@@ -330,10 +330,9 @@ evmab:snap=10 #weight for snap sourced predictions
 evmab:augustus=10 #weight for augustus sourced predictions
 evmab:fgenesh=10 #weight for fgenesh sourced predictions
 evmab:genemark=7 #weight for genemark sourced predictions
-'''
-
+```
 ### maker_opts_ipradd.ctl
-'''
+```
 #-----Genome (these are always required)
 genome=/auto/plzen1/home/frankovat/Postprocessing/Gapcloser/Cchal/Cchal_gapcloser.fasta #genome sequence (fasta file or fasta embeded in GFF3 file)
 organism_type=eukaryotic #eukaryotic or prokaryotic. Default is eukaryotic
@@ -410,10 +409,10 @@ tries=2 #number of times to try a contig if there is a failure for some reason
 clean_try=0 #remove all data from previous run before retrying, 1 = yes, 0 = no
 clean_up=0 #removes theVoid directory with individual analysis files, 1 = yes, 0 = no
 TMP= #specify a directory other than the system default temporary directory for temporary files
-'''
+```
 
 ### Reformat_gff
-'''
+```
 import sys
 
 ingff = sys.argv[1]
@@ -457,10 +456,10 @@ outfile.close()
 #     cur_line = line.split()
 #     if cur_line[2] == "cDNA_match":
 #         cur_id = cur_line[8].split(";")[0].split("ID=align_")[1]
-'''
+```
 
 ### gff3_select
-'''
+```
 #!/usr/bin/perl
 use strict;
 use warnings;
