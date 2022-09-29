@@ -1,5 +1,5 @@
 ## 01Maker_reformatgff
-'''
+´´´
 #!/bin/bash
 #PBS -l select=1:ncpus=8:ompthreads=8:mem=300gb:scratch_local=150gb
 #PBS -l walltime=5:00:00
@@ -10,7 +10,7 @@ cp /auto/plzen1/home/frankovat/PASA/job_12326530.meta-pbs.metacentrum.cz/job_122
 module add python-3.6.2-gcc
 
 python /auto/plzen1/home/frankovat/Maker/reformat_gff.py /auto/plzen1/home/frankovat/PASA/job_12326530.meta-pbs.metacentrum.cz/job_12299021.meta-pbs.metacentrum.cz/Cchal.sqlite.pasa_assemblies.gff3 /auto/plzen1/home/frankovat/Maker/Cchal.sqlite.pasa_assemblies_form.gff3 Cchal #transforming previous gff file into new one
-'''
+´´´
 
 ## 02Maker_ifloop
 '''
