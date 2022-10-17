@@ -26,18 +26,13 @@ cp /auto/plzen1/home/frankovat/Maker/Cchal.sqlite.pasa_assemblies_form.gff3 $SCR
 cp -r /auto/plzen1/home/frankovat/Maker/02Output/Cchal.maker.output $SCRATCHDIR || exit 5
 cd $SCRATCHDIR || exit 6
 
-
 module load maker-2.31.10
 
-mkdir tmp
+mkdir "$SCRATCHDIR/tmp"
 
-mpirun maker -fix_nucleotides -base Cchal -TMP "$SCRATCHDIR/tmp" &
-sleep 20m
+mpirun maker -fix_nucleotides -base Cchal -TMP "$SCRATCHDIR/tmp"
 
-mpirun maker -fix_nucleotides -base Cchal -TMP "$SCRATCHDIR/tmp"&
-
-rm -r -f $SCRATCHDIR/tmp
-#force removal of a directory
+rm -r $SCRATCHDIR/tmp
 
 mkdir round_1_output_brakerpred
 cd round_1_output_brakerpred
@@ -46,7 +41,7 @@ fasta_merge -d $SCRATCHDIR/Cchal.maker.output/Cchal_master_datastore_index.log -
 gff3_merge -d $SCRATCHDIR/Cchal.maker.output/Cchal_master_datastore_index.log -o Cchal_all.gff3
 gff3_merge -d $SCRATCHDIR/Cchal.maker.output/Cchal_master_datastore_index.log -o Cchal_genes.gff3 -g
 
-cp -r $SCRATCHDIR /storage/plzen1/home/frankovat/Maker || export CLEAN_SCRATCH=false
+cp -r $SCRATCHDIR /storage/plzen1/home/frankovat/Maker/Cchal2 || export CLEAN_SCRATCH=false
 ```
 
 ## 03Maker_busco1
