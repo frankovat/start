@@ -119,15 +119,15 @@ cp -r $SCRATCHDIR /storage/plzen1/home/frankovat/Maker || export CLEAN_SCRATCH=f
 ```
 #!/bin/bash
 #PBS -l select=1:ncpus=9:mem=300gb:scratch_local=250gb
-#PBS -l walltime=15:00:00
+#PBS -l walltime=50:00:00
 #PBS -m abe
 
 #cp /auto/plzen1/home/frankovat/Maker/02Output/round_1_output_brakerpred/Cchal_all.gff3 $SCRATCHDIR || exit 1
-cp -r  /auto/plzen1/home/frankovat/Maker/02Output/Cchal_ipradd.maker.output $SCRATCHDIR || exit 1
+cp -r  /auto/plzen1/home/frankovat/Maker/Cchal2/Output/Cchal_ipradd.maker.output $SCRATCHDIR || exit 1
 cp /auto/plzen1/home/frankovat/Maker/maker_bopts.ctl $SCRATCHDIR || exit 2
-#cp /auto/plzen1/home/frankovat/Maker/maker_opts.ctl $SCRATCHDIR || exit 3
+cp /auto/plzen1/home/frankovat/Maker/maker_opts.ctl $SCRATCHDIR || exit 3
 cp /auto/plzen1/home/frankovat/Maker/maker_exe.ctl $SCRATCHDIR || exit 3
-cp /auto/plzen1/home/frankovat/Maker/maker_opts_ipradd.ctl $SCRATCHDIR || exit 4
+cp /auto/plzen1/home/frankovat/Maker/Cchal2/maker_opts_ipradd.ctl $SCRATCHDIR || exit 4
 cd $SCRATCHDIR || exit 5
 
 module load maker-2.31.10
@@ -136,14 +136,11 @@ module load maker-2.31.10
 #module load hmmer-3.3.2
 #module load blast+-2.8.0a-src
 
-mkdir tmp
+mkdir "$SCRATCHDIR/tmp"
 
-mpirun maker -fix_nucleotides -base Cchal_ipradd -TMP "$SCRATCHDIR/tmp" &
-sleep 20m
- 
-mpirun maker -fix_nucleotides -base Cnig -TMP "$SCRATCHDIR/tmp"&
+mpirun maker -fix_nucleotides -base Cchal_ipradd -TMP "$SCRATCHDIR/tmp"
 
-rm -r -f $SCRATCHDIR/tmp
+rm -r "$SCRATCHDIR/tmp"
 #force removal of a directory
 
 mkdir round_2_output_ipradd
@@ -157,7 +154,7 @@ gff3_merge -d $SCRATCHDIR/Cchal_ipradd.maker.output/Cchal_ipradd_master_datastor
 
 maker_map_ids --prefix cchal_ --justify 5 cchal_genes.gff3 > Cchal_genes.ids
 
-cp -r $SCRATCHDIR/round_2_output_ipradd /auto/plzen1/home/frankovat/Maker/02Output || CLEAN_SCRATCH=false
+cp -r $SCRATCHDIR/round_2_output_ipradd /auto/plzen1/home/frankovat/Maker/Cchal2/Output || CLEAN_SCRATCH=false
 ```
 
 
