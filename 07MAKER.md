@@ -687,10 +687,11 @@ sub parse_gff {
 
     return \%top_index;
 }
-'''
+```
 
 ## make_name_set.py
-```from Bio import SeqIO
+```
+from Bio import SeqIO
 import sys
 
 prot_file = sys.argv[1]
