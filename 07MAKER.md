@@ -156,6 +156,83 @@ maker_map_ids --prefix cchal_ --justify 5 cchal_genes.gff3 > Cchal_genes.ids
 
 cp -r $SCRATCHDIR/round_2_output_ipradd /auto/plzen1/home/frankovat/Maker/Cchal2/Output || CLEAN_SCRATCH=false
 ```
+## 07-09: combine them into one!
+
+```
+#!/bin/bash
+#PBS -l select=1:ncpus=9:mem=300gb:scratch_local=250gb
+#PBS -l walltime=50:00:00
+#PBS -m abe
+
+cp /auto/plzen1/home/frankovat/Maker/Cchal2/Output/round_2_output_ipradd/cchal_genes.gff3 $SCRATCHDIR || exit 1
+cp /auto/plzen1/home/frankovat/Maker/Cchal2/Output/round_2_output_ipradd/Cchal_genes.ids $SCRATCHDIR || exit 2
+cp /auto/plzen1/home/frankovat/Maker/maker_bopts.ctl $SCRATCHDIR || exit 3
+cp /auto/plzen1/home/frankovat/Maker/maker_opts.ctl $SCRATCHDIR || exit 4
+cp /auto/plzen1/home/frankovat/Maker/maker_exe.ctl $SCRATCHDIR || exit 5
+cp /auto/plzen1/home/frankovat/Maker/Cchal2/maker_opts_ipradd.ctl $SCRATCHDIR || exit 6
+cd $SCRATCHDIR || exit 7
+
+module load maker-2.31.10
+
+cp cchal_genes.gff3 cchal_genes2.gff3 || exit 1
+
+map_gff_ids Cchal_genes.ids cchal_genes2.gff3
+
+cp -r $SCRATCHDIR /auto/plzen1/home/frankovat/Maker/Cchal2/Output || CLEAN_SCRATCH=false
+```
+```
+#!/bin/bash
+#PBS -l select=1:ncpus=9:mem=300gb:scratch_local=250gb
+#PBS -l walltime=50:00:00
+#PBS -m abe
+
+cp /auto/plzen1/home/frankovat/Maker/Cchal2/Output/job_13208079.meta-pbs.metacentrum.cz/cchal_genes2.gff3 $SCRATCHDIR || exit 1
+cp /auto/plzen1/home/frankovat/Maker/Cchal2/Output/job_13208079.meta-pbs.metacentrum.cz/Cchal_genes.ids $SCRATCHDIR || exit 2
+cp /auto/plzen1/home/frankovat/Maker/Cchal2/Output/round_2_output_ipradd/cchal.all.maker.proteins.fasta $SCRATCHDIR || exit 3
+cp /auto/plzen1/home/frankovat/Maker/maker_bopts.ctl $SCRATCHDIR || exit 4
+cp /auto/plzen1/home/frankovat/Maker/maker_opts.ctl $SCRATCHDIR || exit 5
+cp /auto/plzen1/home/frankovat/Maker/maker_exe.ctl $SCRATCHDIR || exit 6
+cp /auto/plzen1/home/frankovat/Maker/Cchal2/maker_opts_ipradd.ctl $SCRATCHDIR || exit 7
+cp /auto/plzen1/home/frankovat/Maker/make_name_set.py $SCRATCHDIR || exit 8
+cd $SCRATCHDIR || exit 9
+
+#module load maker-2.31.10
+module load python-3.6.2-gcc
+
+python $SCRATCHDIR/make_name_set.py cchal.all.maker.proteins.fasta cchal_genes2.gff3 Cchal_genes.ids Cchal_prots.ids
+
+cp -r $SCRATCHDIR /auto/plzen1/home/frankovat/Maker/Cchal2/Output || CLEAN_SCRATCH=false
+```
+```
+#!/bin/bash
+#PBS -l select=1:ncpus=9:mem=300gb:scratch_local=250gb
+#PBS -l walltime=50:00:00
+#PBS -m abe
+
+cp /auto/plzen1/home/frankovat/Maker/Cchal2/Output/round_2_output_ipradd/Cchal_prots.ids $SCRATCHDIR || exit 1
+cp /auto/plzen1/home/frankovat/Maker/Cchal2/Output/round_2_output_ipradd/cchal.all.maker.transcripts.fasta $SCRATCHDIR || exit 2
+cp /auto/plzen1/home/frankovat/Maker/Cchal2/Output/round_2_output_ipradd/cchal.all.maker.proteins.fasta $SCRATCHDIR || exit 3
+cp /auto/plzen1/home/frankovat/Maker/maker_bopts.ctl $SCRATCHDIR || exit 4
+cp /auto/plzen1/home/frankovat/Maker/maker_opts.ctl $SCRATCHDIR || exit 5
+cp /auto/plzen1/home/frankovat/Maker/maker_exe.ctl $SCRATCHDIR || exit 6
+cp /auto/plzen1/home/frankovat/Maker/Cchal2/maker_opts_ipradd.ctl $SCRATCHDIR || exit 7
+cp /auto/plzen1/home/frankovat/Maker/make_name_set.py $SCRATCHDIR || exit 8
+cd $SCRATCHDIR || exit 9
+
+module load maker-2.31.10
+
+cp cchal.all.maker.proteins.fasta Cchal_proteins.fasta
+
+map_fasta_ids Cchal_prots.ids Cchal_proteins.fasta
+#mapping ids to proteins
+
+cp cchal.all.maker.transcripts.fasta Cchal_transcripts.fasta
+
+map_fasta_ids Cchal_prots.ids Cchal_transcripts.fasta
+
+cp -r $SCRATCHDIR /auto/plzen1/home/frankovat/Maker/Cchal2/Output/round_2_output_ipradd || export CLEAN_SCRATCH=false
+```
+
 
 
 # CTL files
@@ -611,3 +688,53 @@ sub parse_gff {
     return \%top_index;
 }
 '''
+
+## make_name_set.py
+```from Bio import SeqIO
+import sys
+
+prot_file = sys.argv[1]
+gff_file = sys.argv[2]
+in_id_list = sys.argv[3]
+out_id_list = sys.argv[4]
+
+reader = SeqIO.parse(prot_file, format = 'fasta')
+
+seq_ids = []
+for rec in reader:
+    seq_ids.append(rec.id)
+
+outfile = open(out_id_list, 'w')
+
+gff_dic = {}
+reader = open(gff_file, 'r')
+for line in reader: #for each line in the file
+    if "#FASTA" in line:
+        break #breaks the for loop
+    if line.startswith("#"):
+        continue
+        #this if = check if line starts with # and if so, continue with the loop
+    cur_line = line.split()
+    #it returns the whole line (split)
+    if cur_line[2] == "mRNA": 
+    #if the line starts with mRNA, third word
+        cur_attr = cur_line[8].split(";")  
+        #looks at the 9th word, deletes semicolon, gives it to current att.
+        cur_id = cur_attr[0].split("ID=")[1]  
+        #current id is the attribute from before, splits it after the ID=
+        cur_name = cur_attr[2].split("Name=")[1]    
+        #current name is the attribute on place 3, splits it after NAME=
+        gff_dic[cur_id] = cur_name #cur_ids are keys
+        #this gff_dic on the current possition of id hets the name from before
+
+reader = open(in_id_list, 'r') #open file 
+for line in reader:
+#for each line in the file
+    cur_line = line.split()
+    #split line
+    if cur_line[0] in gff_dic.keys(): #a dictionary, 
+        outfile.write("%s\t%s\n" % (gff_dic[cur_line[0]], cur_line[1]))
+    else:
+        outfile.write(line)
+outfile.close()
+```
