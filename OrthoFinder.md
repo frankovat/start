@@ -21,7 +21,7 @@ source /mnt/gpfsA/home/frankova/miniconda3/bin/activate orthofinder
 /mnt/gpfsA/home/frankova/software/OrthoFinder_source/orthofinder.py -f $HOMEDIR -t 8
 ```
 
-To the homedir, paste all your species, but first run them through this script (you can run it straight through command line):
+To the homedir, paste all your species data. If you compare your four individuals, create a directory with the four individuals. But first run them through this script (you can run it straight through command line):
 ```
 #!/usr/bin/env python
 
