@@ -1,3 +1,4 @@
+'''
 Znev <- c()
 n <- 1
 l <- nrow(ortgr)
@@ -20,3 +21,4 @@ ggVennDiagram(orthologs,
               label = "count") +
   scale_fill_gradient(low="#B07BAC", high="#5F7367")
 dev.off()
+'''
