@@ -25,4 +25,5 @@ setOfor3.to_csv('/Users/terezafrankova/Documents/GeneSetStart/OforGOforR.tsv',se
 
 ##in R library topGO, try to annotate the GO terms
 # annFUN.gene2GO("BP", feasibleGenes=NULL, AnimalGOgenelist)
+# MnatOforAnnot <- go2term(Maplist)
 #https://bioconductor.org/packages/release/bioc/manuals/topGO/man/topGO.pdf¨
