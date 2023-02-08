@@ -21,3 +21,8 @@ setOfor = setOfor.drop_duplicates()
 
 #Save file and move to R
 setOfor3.to_csv('/Users/terezafrankova/Documents/GeneSetStart/OforGOforR.tsv',sep='\t', header=True, index=False)
+
+
+##in R library topGO, try to annotate the GO terms
+# annFUN.gene2GO("BP", feasibleGenes=NULL, AnimalGOgenelist)
+#https://bioconductor.org/packages/release/bioc/manuals/topGO/man/topGO.pdf¨
